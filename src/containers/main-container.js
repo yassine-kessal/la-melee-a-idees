@@ -3,6 +3,7 @@ import Header from "./main/header";
 
 // bootstrap
 import "bootstrap/scss/bootstrap.scss";
+import "bootstrap/js/src";
 import Footer from "./main/footer";
 
 class MainContainer extends Component {

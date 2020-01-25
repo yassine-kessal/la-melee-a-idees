@@ -52,7 +52,7 @@ class ListIdeasFromCategory extends Component {
         query: ref => ref.limit(10),
         then: () => {
           const {ideas} = this.state;
-          
+
           if(ideas.length > 0)
           {
             let users_ids = ideas.map(idea => idea.user_id); // add users ideas
