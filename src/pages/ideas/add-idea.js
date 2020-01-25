@@ -5,6 +5,7 @@ import {inject, observer} from "mobx-react";
 import validate from "validate.js";
 import routes from "../../routes";
 import {Link} from "react-router-dom";
+import NotAuthorized from "../../components/not-authorized";
 
 @inject('mainStore', 'userStore')
 @observer
@@ -111,6 +112,10 @@ class AddIdea extends Component {
 
   render() {
     const {success, errors, idea, fetched, categories} = this.state;
+    const {userStore} = this.props;
+
+    if(!userStore.isAuthenticated)
+      return <NotAuthorized/>;
 
     return (
       <>
