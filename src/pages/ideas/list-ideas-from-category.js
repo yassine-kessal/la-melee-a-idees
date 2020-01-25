@@ -3,6 +3,7 @@ import {firestore, rebase} from "../../helpers/firebase";
 import routes from "../../routes";
 import {inject, observer} from "mobx-react";
 import NotAuthorized from "../../components/not-authorized";
+import {Link} from "react-router-dom";
 
 @inject('mainStore', 'userStore')
 @observer
@@ -51,27 +52,36 @@ class ListIdeasFromCategory extends Component {
         query: ref => ref.limit(10),
         then: () => {
           const {ideas} = this.state;
-          let users_ids = ideas.map(idea => idea.user_id); // add users ideas
-          let likes_users_ids = ideas.map(idea => idea.likes.map(like => like));
+          
+          if(ideas.length > 0)
+          {
+            let users_ids = ideas.map(idea => idea.user_id); // add users ideas
+            let likes_users_ids = ideas.map(idea => idea.likes.map(like => like));
 
-          // add users likes
-          likes_users_ids.forEach(v => {
-            users_ids = [...users_ids, ...v]
-          });
+            // add users likes
+            likes_users_ids.forEach(v => {
+              users_ids = [...users_ids, ...v]
+            });
 
-          users_ids = Array.from(new Set(users_ids)); // delete duplicated ids
+            users_ids = Array.from(new Set(users_ids)); // delete duplicated ids
 
-          this.refUsers = rebase.bindCollection("users", {
-            context: this,
-            state: 'users',
-            withIds: true,
-            query: ref => ref.where('user_id', 'in', users_ids),
-            then: () => {
-              this.setState({
-                fetched: true
-              });
-            }
-          });
+            this.refUsers = rebase.bindCollection("users", {
+              context: this,
+              state: 'users',
+              withIds: true,
+              query: ref => ref.where('user_id', 'in', users_ids),
+              then: () => {
+                this.setState({
+                  fetched: true
+                });
+              }
+            });
+          }
+          else {
+            this.setState({
+              fetched: true
+            });
+          }
         }
       });
     } catch (e) {
@@ -80,8 +90,10 @@ class ListIdeasFromCategory extends Component {
   }
 
   componentWillUnmount() {
-    rebase.removeBinding(this.refIdeas);
-    rebase.removeBinding(this.refUsers);
+    if(this.refIdeas !== null)
+      rebase.removeBinding(this.refIdeas);
+    if(this.refUsers !== null)
+      rebase.removeBinding(this.refUsers);
   }
 
   async handleLikeClick(e, idea) {
@@ -129,6 +141,8 @@ class ListIdeasFromCategory extends Component {
           </h1>
 
           <div>
+            <Link to={routes.ideas.list.path} className={"btn btn-primary"}>Retour à la liste des catégories</Link>
+            <Link className={"btn btn-success ml-2"} to={routes.ideas.add.path}>Ajouter une idée</Link>
             {ideas.map((idea, i) => (
               <div className={"card mt-2"} key={i}>
                 <div className={"card-body"}>{idea.idea}</div>
