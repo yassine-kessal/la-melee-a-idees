@@ -99,7 +99,7 @@ class ListIdeasFromCategory extends Component {
   async handleLikeClick(e, idea) {
     e.preventDefault();
 
-    const {userStore} = this.props;
+    const {userStore, mainStore} = this.props;
 
     try {
       let likes = idea.likes;
@@ -109,6 +109,14 @@ class ListIdeasFromCategory extends Component {
       } else {
         // like
         likes = [...idea.likes, userStore.id];
+
+        // get user info and bind it to local variable
+        if(this.state.users.filter(user => user.user_id === userStore.id).length === 0)
+        {
+          this.setState(prevState => ({
+            users: [...prevState.users, userStore.data]
+          }));
+        }
       }
 
       await rebase.updateDoc("categories/"+this.state.category_id+"/ideas/"+idea.id, {
