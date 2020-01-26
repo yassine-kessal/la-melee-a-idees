@@ -24,9 +24,9 @@ class Header extends Component {
 
     mainStore.enableLoading();
 
-    authentication.onAuthStateChanged(user => {
+    authentication.onAuthStateChanged(async user => {
       if(user){
-        userStore.authenticate(user);
+        await userStore.authenticate(user);
       }
 
       mainStore.disableLoading();

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import Input from "../components/input";
 import validate from "validate.js";
-import {authentication, firestore} from "../helpers/firebase";
+import {authentication, firestore, rebase} from "../helpers/firebase";
 import routes from "../routes";
 import {inject, observer} from "mobx-react";
 import NotAuthorized from "../components/not-authorized";
@@ -88,7 +88,7 @@ class Register extends Component {
           displayName: prenom + " " + nom,
         });
 
-        await firestore.collection('users').add({
+        const data = {
           user_id: user.uid,
           profile: {
             last_name: nom,
@@ -96,13 +96,11 @@ class Register extends Component {
             name: prenom + " " + nom
           },
           role: 'user'
-        });
+        };
 
-        userStore.authenticate({
-          email: user.email,
-          id: user.id,
-          displayName: prenom + " " + nom,
-        });
+        await firestore.collection('users').add(data);
+
+        await userStore.authenticate(user);
       } catch(error) { // user creation failed #2
         this.setState({
           errors: {

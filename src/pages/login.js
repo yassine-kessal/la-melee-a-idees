@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import Input from "../components/input";
 import {inject, observer} from "mobx-react";
 import validate from "validate.js";
-import {authentication, firestore, firebase} from "../helpers/firebase";
+import {authentication, firestore, firebase, rebase} from "../helpers/firebase";
 import NotAuthorized from "../components/not-authorized";
 import routes from "../routes";
 import {Redirect} from "react-router-dom";
@@ -61,7 +61,7 @@ class Login extends Component {
       try {
         const {user} = await authentication.signInWithEmailAndPassword(email, password);
 
-        userStore.authenticate({email, password, displayName: user.displayName});
+        await userStore.authenticate(user);
       } catch (error) {
         this.setState({
           errors: {
@@ -98,7 +98,7 @@ class Login extends Component {
         });
       }
 
-      userStore.authenticate(result.user);
+      await userStore.authenticate(result.user);
     } catch(error) {
       this.setState({
         errors: {
